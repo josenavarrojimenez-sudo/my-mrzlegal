@@ -112,8 +112,27 @@
   const run = () => {
     const items = collectItems();
     translateBatch(items);
-    document.querySelectorAll('a[href^="/en/"]').forEach((el) => {
-      el.setAttribute('href', el.getAttribute('href').replace('/en/', '/es/'));
+    // Keep navigation within Spanish paths
+    document.querySelectorAll('a[href]').forEach((el) => {
+      const href = el.getAttribute('href');
+      if (!href) return;
+      // Skip external links, anchors, and non-http protocols
+      if (/^(https?:)?\/\//i.test(href) || href.startsWith('#') || /^[a-zA-Z]+:/.test(href)) return;
+
+      // Normalize /en/* links to /es/*
+      if (href === '/en' || href === '/en/') {
+        el.setAttribute('href', '/es/');
+        return;
+      }
+      if (href.startsWith('/en/')) {
+        el.setAttribute('href', '/es/' + href.slice(4));
+        return;
+      }
+
+      // If link points to root, keep users in /es/
+      if (href === '/') {
+        el.setAttribute('href', '/es/');
+      }
     });
   };
 
