@@ -24,7 +24,7 @@ const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('/api/*', cors())
 
-app.get('/', (c) => c.redirect('/en/', 302))
+app.get('/', (c) => c.redirect('/es/', 302))
 app.get('/es', (c) => c.redirect('/es/', 302))
 
 app.get('/api/health', (c) => {
