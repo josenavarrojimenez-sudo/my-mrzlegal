@@ -213,6 +213,30 @@ app.post('/api/newsletter', async (c) => {
   return c.json({ success: true })
 })
 
+app.all('/i/*', async (c) => {
+  const url = new URL(c.req.url)
+  url.protocol = 'https:'
+  url.hostname = 'krivitskiy.com'
+
+  const headers = new Headers(c.req.raw.headers)
+  headers.set('host', 'krivitskiy.com')
+  headers.delete('content-length')
+
+  const response = await fetch(url.toString(), {
+    method: c.req.method,
+    headers,
+    redirect: 'manual',
+  })
+
+  const responseHeaders = new Headers(response.headers)
+  responseHeaders.set('cache-control', 'public, max-age=86400')
+
+  return new Response(response.body, {
+    status: response.status,
+    headers: responseHeaders,
+  })
+})
+
 app.all('*', async (c) => {
   const url = new URL(c.req.url)
   url.protocol = 'https:'
