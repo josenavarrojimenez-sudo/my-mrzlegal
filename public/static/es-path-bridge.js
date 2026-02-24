@@ -8,7 +8,18 @@
   }
 
   function updateLangSwitcher(){
-    var enPathValue = window.__mrzEnPath || '/en/';
+    // Always compute the equivalent /en/* for the CURRENT page.
+    // If we're at /es/ -> /en/
+    // If /es/something -> /en/something
+    var enPathValue = (function(){
+      var p = window.__mrzEnPath;
+      if (typeof p === 'string' && p) return p;
+      var current = location.pathname || '/es/';
+      if (current === '/' || current === '') return '/en/';
+      if (current.startsWith('/es')) return current.replace(/^\/es\b/, '/en');
+      if (!current.startsWith('/en/')) return '/en' + (current.startsWith('/') ? current : '/' + current);
+      return current;
+    })();
     var links = Array.prototype.slice.call(document.querySelectorAll('a'));
     links.forEach(function(a){
       var text = (a.textContent || '').trim().toUpperCase();
