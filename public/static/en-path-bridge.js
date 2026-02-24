@@ -2,7 +2,12 @@
   // On English pages, expose the equivalent Spanish path and ensure the
   // language switcher points to /es/*.
   var original = location.pathname;
-  var esPath = original.replace(/^\/en\b/, '/es');
+  // Some upstream links are language-less (/tax/) - treat them as /en/*.
+  var normalized = original;
+  if (!normalized.startsWith('/en/') && !normalized.startsWith('/es/')) {
+    normalized = '/en' + (normalized.startsWith('/') ? normalized : '/' + normalized);
+  }
+  var esPath = normalized.replace(/^\/en\b/, '/es');
   if (!esPath.startsWith('/es')) {
     esPath = '/es/';
   }
@@ -12,7 +17,7 @@
     var links = Array.prototype.slice.call(document.querySelectorAll('a'));
     links.forEach(function(a){
       var text = (a.textContent || '').trim().toUpperCase();
-      if (text === 'EN' || text === 'ES') {
+      if (text === 'EN' || text === 'ES' || text === 'RU' || text === 'RUS' || text === 'РУ' || text === 'РУС') {
         a.textContent = 'ES';
         a.setAttribute('href', window.__mrzEsPath || '/es/');
         a.setAttribute('data-lang-switch', 'es');
