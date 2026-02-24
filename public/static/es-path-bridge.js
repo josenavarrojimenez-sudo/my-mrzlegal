@@ -12,10 +12,14 @@
     var links = Array.prototype.slice.call(document.querySelectorAll('a'));
     links.forEach(function(a){
       var text = (a.textContent || '').trim().toUpperCase();
-      if (text === 'EN' || text === 'ES') {
+      if (text === 'EN' || text === 'ES' || text === 'RU' || text === 'RUS' || text === 'РУ' || text === 'РУС' || text === 'PARA HACER') {
         a.textContent = 'EN';
         a.setAttribute('href', enPathValue);
         a.setAttribute('data-lang-switch', 'en');
+        a.addEventListener('click', function(ev){
+          ev.preventDefault();
+          window.location.assign(enPathValue);
+        }, { capture: true });
       }
     });
   }
