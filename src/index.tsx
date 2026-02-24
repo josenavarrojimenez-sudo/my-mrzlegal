@@ -95,20 +95,41 @@ app.get('/es/*', async (c) => {
     return c.notFound()
   }
 
-  const upstreamUrl = new URL(c.req.url)
-  upstreamUrl.protocol = 'https:'
-  upstreamUrl.hostname = 'krivitskiy.com'
-  upstreamUrl.pathname = pathname.replace(/^\/es\b/, '/en')
-
   const headers = new Headers(c.req.raw.headers)
   headers.set('host', 'krivitskiy.com')
   headers.delete('content-length')
 
-  const response = await fetch(upstreamUrl.toString(), {
-    method: 'GET',
-    headers,
-    redirect: 'manual',
-  })
+  const fetchHtml = async (targetPath: string) => {
+    const upstreamUrl = new URL(c.req.url)
+    upstreamUrl.protocol = 'https:'
+    upstreamUrl.hostname = 'krivitskiy.com'
+    upstreamUrl.pathname = targetPath
+
+    const response = await fetch(upstreamUrl.toString(), {
+      method: 'GET',
+      headers,
+      redirect: 'manual',
+    })
+
+    // If upstream returns a custom 404 page for the Spanish path,
+    // fall back to the upstream home to avoid showing a 404 screen.
+    if (response.status === 404 || response.status === 410) {
+      const fallbackUrl = new URL(c.req.url)
+      fallbackUrl.protocol = 'https:'
+      fallbackUrl.hostname = 'krivitskiy.com'
+      fallbackUrl.pathname = '/en/'
+      return fetch(fallbackUrl.toString(), {
+        method: 'GET',
+        headers,
+        redirect: 'manual',
+      })
+    }
+
+    return response
+  }
+
+  const upstreamPath = pathname.replace(/^\/es\b/, '/en')
+  const response = await fetchHtml(upstreamPath)
 
   const responseHeaders = new Headers(response.headers)
   const contentType = responseHeaders.get('content-type') || ''
@@ -123,12 +144,13 @@ app.get('/es/*', async (c) => {
   const cleaned = applyPreviewEdits(response, {
     stripScripts: false,
     skipTextRewrite: true,
-    extraBodyHtml: '<script src="/static/es-translate.js" defer></script>',
+    extraBodyHtml:
+      '<script src="/static/es-translate.js" defer></script><script src="/static/brand-override.js" defer></script>',
   })
   responseHeaders.set('content-language', 'es')
   responseHeaders.set('x-translation', 'client')
   return new Response(cleaned.body, {
-    status: response.status,
+    status: 200,
     headers: responseHeaders,
   })
 })
