@@ -2,6 +2,7 @@
   const to = 'MRZ LEGAL';
   const fromDomain = /krivitskiy\.com/gi;
   const fromName = /krivitskiy/gi;
+  const fromHero = /\bkrivitsky\b/gi;
 
   const paragraphStart = 'Regional projects hold significant importance';
   const paragraphReplacement =
@@ -33,10 +34,11 @@
 
   const replaceText = (node) => {
     if (node.nodeType === Node.TEXT_NODE) {
-      if (fromDomain.test(node.nodeValue) || fromName.test(node.nodeValue)) {
+      if (fromDomain.test(node.nodeValue) || fromName.test(node.nodeValue) || fromHero.test(node.nodeValue)) {
         node.nodeValue = node.nodeValue
           .replace(fromDomain, to)
-          .replace(fromName, to);
+          .replace(fromName, to)
+          .replace(fromHero, to);
       }
       return;
     }
@@ -46,8 +48,8 @@
     const el = node;
     ['alt', 'title', 'aria-label', 'placeholder'].forEach((attr) => {
       const value = el.getAttribute(attr);
-      if (value && (fromDomain.test(value) || fromName.test(value))) {
-        el.setAttribute(attr, value.replace(fromDomain, to).replace(fromName, to));
+      if (value && (fromDomain.test(value) || fromName.test(value) || fromHero.test(value))) {
+        el.setAttribute(attr, value.replace(fromDomain, to).replace(fromName, to).replace(fromHero, to));
       }
     });
     el.childNodes.forEach(replaceText);
@@ -57,7 +59,7 @@
     replaceText(document.body);
     replaceParagraph();
     if (document.title) {
-      document.title = document.title.replace(fromDomain, to).replace(fromName, to);
+      document.title = document.title.replace(fromDomain, to).replace(fromName, to).replace(fromHero, to);
     }
   };
 
