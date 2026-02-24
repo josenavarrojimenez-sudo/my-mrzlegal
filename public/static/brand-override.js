@@ -76,4 +76,15 @@
     });
   });
   observer.observe(document.documentElement, { subtree: true, childList: true, characterData: true });
+
+  // Nuxt may replace large chunks of DOM after hydration.
+  // Re-run a few times shortly after load to ensure hero titles are updated.
+  let attempts = 0;
+  const interval = setInterval(() => {
+    run();
+    attempts += 1;
+    if (attempts >= 10) {
+      clearInterval(interval);
+    }
+  }, 500);
 })();
