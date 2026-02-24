@@ -147,7 +147,7 @@ app.get('/es/*', async (c) => {
     // IMPORTANT: inject translators BEFORE Nuxt boots, otherwise Nuxt will render its own 404 route
     // for /es/* (because the Nuxt app doesn't know /es/* routes).
     extraHeadHtml:
-      '<script src="/static/es-translate.js"></script><script src="/static/brand-override.js"></script>',
+      '<script src="/static/es-path-bridge.js"></script><script src="/static/es-translate.js"></script><script src="/static/brand-override.js"></script>',
   })
   responseHeaders.set('content-language', 'es')
   responseHeaders.set('x-translation', 'client')
