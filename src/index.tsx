@@ -223,7 +223,7 @@ app.all('*', async (c) => {
   }
 
   const controller = new AbortController()
-  const timeoutMs = method === 'GET' || method === 'HEAD' ? 8000 : 20000
+  const timeoutMs = method === 'GET' || method === 'HEAD' ? 20000 : 20000
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
   init.signal = controller.signal
 
@@ -254,6 +254,7 @@ app.all('*', async (c) => {
           const previewOptions = {
             stripScripts: false,
             skipTextRewrite: true,
+            extraBodyHtml: '<script src="/static/brand-override.js" defer></script>',
           }
           outgoingResponse = applyPreviewEdits(response, previewOptions)
         } else {
@@ -261,7 +262,7 @@ app.all('*', async (c) => {
             stripScripts: false,
             skipTextRewrite: true,
             extraHeadHtml: '<script src="/static/es-path-bridge.js" defer></script>',
-            extraBodyHtml: '<script src="/static/es-translate.js" defer></script>',
+            extraBodyHtml: '<script src="/static/es-translate.js" defer></script><script src="/static/brand-override.js" defer></script>',
           }
           outgoingResponse = applyPreviewEdits(response, previewOptions)
           didTranslate = true

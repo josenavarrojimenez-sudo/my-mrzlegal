@@ -1,6 +1,7 @@
 (function () {
-  const from = /krivitskiy/gi;
   const to = 'MRZ LEGAL';
+  const fromDomain = /krivitskiy\.com/gi;
+  const fromName = /krivitskiy/gi;
 
   const paragraphStart = 'Regional projects hold significant importance';
   const paragraphReplacement =
@@ -32,8 +33,10 @@
 
   const replaceText = (node) => {
     if (node.nodeType === Node.TEXT_NODE) {
-      if (from.test(node.nodeValue)) {
-        node.nodeValue = node.nodeValue.replace(from, to);
+      if (fromDomain.test(node.nodeValue) || fromName.test(node.nodeValue)) {
+        node.nodeValue = node.nodeValue
+          .replace(fromDomain, to)
+          .replace(fromName, to);
       }
       return;
     }
@@ -43,8 +46,8 @@
     const el = node;
     ['alt', 'title', 'aria-label', 'placeholder'].forEach((attr) => {
       const value = el.getAttribute(attr);
-      if (value && from.test(value)) {
-        el.setAttribute(attr, value.replace(from, to));
+      if (value && (fromDomain.test(value) || fromName.test(value))) {
+        el.setAttribute(attr, value.replace(fromDomain, to).replace(fromName, to));
       }
     });
     el.childNodes.forEach(replaceText);
@@ -54,7 +57,7 @@
     replaceText(document.body);
     replaceParagraph();
     if (document.title) {
-      document.title = document.title.replace(from, to);
+      document.title = document.title.replace(fromDomain, to).replace(fromName, to);
     }
   };
 
