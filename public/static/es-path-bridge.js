@@ -12,14 +12,27 @@
     var links = Array.prototype.slice.call(document.querySelectorAll('a'));
     links.forEach(function(a){
       var text = (a.textContent || '').trim().toUpperCase();
-      if (text === 'EN' || text === 'ES' || text === 'RU' || text === 'RUS' || text === 'РУ' || text === 'РУС' || text === 'PARA HACER') {
+      // Force language toggle on /es/* to be ONLY "EN" and always point to the equivalent /en/* route.
+      // Upstream sometimes renders it as RU/RUS/РУ/РУС or translated text (e.g. "PARA HACER").
+      if (text === 'EN' || text === 'ES' || text === 'RU' || text === 'RUS' || text === 'РУ' || text === 'РУС' || text === 'PARA HACER' || text === 'TO DO') {
         a.textContent = 'EN';
         a.setAttribute('href', enPathValue);
         a.setAttribute('data-lang-switch', 'en');
-        a.addEventListener('click', function(ev){
-          ev.preventDefault();
-          window.location.assign(enPathValue);
-        }, { capture: true });
+        a.setAttribute('hreflang', 'en');
+        a.setAttribute('lang', 'en');
+        a.setAttribute('aria-label', 'English');
+        a.setAttribute('title', 'English');
+
+        // Capture-phase: beat Nuxt/router handlers and prevent RU navigation.
+        a.addEventListener(
+          'click',
+          function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            window.location.assign(enPathValue);
+          },
+          { capture: true }
+        );
       }
     });
   }
