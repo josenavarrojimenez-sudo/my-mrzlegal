@@ -22,9 +22,11 @@
     while (walker.nextNode()) {
       const node = walker.currentNode;
       const raw = node.nodeValue || '';
-      const value = raw.trim();
-      if (value.length < 2) continue;
-      items.push({ type: 'text', node, value, raw });
+      // Preserve original spacing/line breaks by translating the full node value,
+      // but skip nodes that are only whitespace.
+      if (!raw.trim()) continue;
+      if (raw.trim().length < 2) continue;
+      items.push({ type: 'text', node, value: raw, raw });
     }
     const attrTargets = document.querySelectorAll('[title],[aria-label],[placeholder]');
     attrTargets.forEach((el) => {
@@ -41,8 +43,7 @@
   const applyTranslation = (item, translated) => {
     if (!translated) return;
     if (item.type === 'text') {
-      const raw = item.raw || '';
-      item.node.nodeValue = raw.replace(item.value, translated);
+      item.node.nodeValue = translated;
       return;
     }
     if (item.type === 'attr') {
