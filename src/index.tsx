@@ -144,8 +144,10 @@ app.get('/es/*', async (c) => {
   const cleaned = applyPreviewEdits(response, {
     stripScripts: false,
     skipTextRewrite: true,
-    extraBodyHtml:
-      '<script src="/static/es-translate.js" defer></script><script src="/static/brand-override.js" defer></script>',
+    // IMPORTANT: inject translators BEFORE Nuxt boots, otherwise Nuxt will render its own 404 route
+    // for /es/* (because the Nuxt app doesn't know /es/* routes).
+    extraHeadHtml:
+      '<script src="/static/es-translate.js"></script><script src="/static/brand-override.js"></script>',
   })
   responseHeaders.set('content-language', 'es')
   responseHeaders.set('x-translation', 'client')
