@@ -19,8 +19,13 @@
       var text = (a.textContent || '').trim().toUpperCase();
       if (text === 'EN' || text === 'ES' || text === 'RU' || text === 'RUS' || text === 'РУ' || text === 'РУС') {
         a.textContent = 'ES';
+        // Force absolute Spanish path for current page
         a.setAttribute('href', window.__mrzEsPath || '/es/');
         a.setAttribute('data-lang-switch', 'es');
+        a.addEventListener('click', function(ev){
+          ev.preventDefault();
+          window.location.assign(window.__mrzEsPath || '/es/');
+        }, { capture: true });
       }
     });
   }
