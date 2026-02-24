@@ -302,6 +302,7 @@ app.all('*', async (c) => {
           const previewOptions = {
             stripScripts: false,
             skipTextRewrite: true,
+            extraHeadHtml: '<script src="/static/en-path-bridge.js"></script>',
             extraBodyHtml: '<script src="/static/brand-override.js" defer></script>',
           }
           outgoingResponse = applyPreviewEdits(response, previewOptions)

@@ -114,6 +114,7 @@
     translateBatch(items);
     // Keep navigation within Spanish paths
     document.querySelectorAll('a[href]').forEach((el) => {
+      if (el.hasAttribute('data-lang-switch')) return;
       const href = el.getAttribute('href');
       if (!href) return;
       // Skip external links, anchors, and non-http protocols
